@@ -39,6 +39,11 @@ trait Helpers
     protected $cancel_url;
 
     /**
+     * @var array
+     */
+    protected $setup_fee = [];
+
+    /**
      * Setup a subscription.
      *
      * @param string $customer_name
@@ -226,9 +231,16 @@ trait Helpers
 
         $plan_pricing = $this->addPlanBillingCycle($interval_unit, $interval_count, $price);
         $billing_cycles = empty($this->trial_pricing) ? [$plan_pricing] : collect([$this->trial_pricing, $plan_pricing])->filter()->toArray();
-
         $this->addBillingPlan($name, $description, $billing_cycles);
 
+        return $this;
+    }
+
+    public function addSetupFee(float $value, $currency_code = 'USD') {
+        $this->setup_fee = [
+            'value' => $value,
+            'currency_code' => $currency_code
+        ];
         return $this;
     }
 
@@ -358,6 +370,10 @@ trait Helpers
                 'payment_failure_threshold' => $this->payment_failure_threshold,
             ],
         ];
+
+        if($this->setup_fee) {
+            $plan_params['payment_preferences']['setup_fee'] = $this->setup_fee;
+        } 
 
         $this->billing_plan = $this->createPlan($plan_params, $request_id);
     }
