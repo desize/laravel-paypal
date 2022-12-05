@@ -293,7 +293,7 @@ trait Helpers
      *
      * @return \Srmklive\PayPal\Services\PayPal
      */
-    public function addProduct(string $name, string $description, string $type, string $category): \Srmklive\PayPal\Services\PayPal
+    public function addProduct(string $name, string $description, string $type, string $category, string $prod_id = null): \Srmklive\PayPal\Services\PayPal
     {
         if (isset($this->product)) {
             return $this;
@@ -302,6 +302,7 @@ trait Helpers
         $request_id = Str::random();
 
         $this->product = $this->createProduct([
+            'prod_id'          => $prod_id,
             'name'          => $name,
             'description'   => $description,
             'type'          => $type,
